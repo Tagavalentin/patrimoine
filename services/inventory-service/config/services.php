@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    /* Services internes Patrimoine */
+
+    'asset' => [
+        'url' => env('ASSET_SERVICE_URL', 'http://asset-service-nginx'),
+    ],
+
 ];

@@ -163,3 +163,23 @@ Format d'une entrée :
   était faite).
 - Solution retenue : chaque transition écrit explicitement le nouveau
   statut + horodatages (`scheduled_date`, `started_at`, `completed_at`).
+
+## 2026-11-11 — Étape 9 : inventory-service
+
+- Problème : l'inventaire physique doit lister les biens de
+  l'asset-service sans jointure inter-bases.
+- Hypothèses : requête SQL directe sur asset_db.
+- Recherches : pagination de l'API assets (100/page, borne 50 pages).
+- Solution retenue : `AssetServiceClient::listAssets` pagine toute
+  l'API et chaque campagne stocke des **lignes-instantané**
+  (`inventory_lines`) — l'inventaire reste cohérent même si les
+  biens évoluent ensuite.
+
+- Problème : la policy `CampaignPolicy` n'était pas découverte par
+  Gate (convention `InventoryCampaignPolicy` attendue).
+- Solution retenue : renommer la policy selon le modèle ;
+  `check` autorise aussi l'auditeur (il constate, ne gère pas).
+
+- Problème : index dupliqué `check_status` (inline + explicite)
+  → erreur SQLite en test.
+- Solution retenue : index inline conservé, explicite retiré.
