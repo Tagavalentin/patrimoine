@@ -1,59 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gestion du Patrimoine de l'État
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Solution numérique de gestion du patrimoine de l'État, développée en architecture
+**micro-services** avec **Laravel**, **PostgreSQL** et **Docker**.
 
-## About Laravel
+Ce projet constitue le support d'une présentation orale : la qualité du code, la
+propreté de l'architecture et la justification des choix techniques sont aussi
+importantes que les fonctionnalités elles-mêmes.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```
+                 ┌──────────────┐
+   Navigateur ──▶│   Gateway    │  Nginx — point d'entrée unique
+                 │  (Nginx)     │  /api/auth, /api/assets, ...
+                 └──────┬───────┘
+        ┌───────────────┼────────────────────┬──────────────┐
+        ▼               ▼                    ▼              ▼
+ ┌────────────┐  ┌────────────┐   ┌──────────────────┐  ┌───────────┐
+ │ auth-      │  │ asset-     │   │ maintenance-     │  │ reporting │
+ │ service    │  │ service    │   │ service          │  │ -service  │
+ │ (auth_db)  │  │ (asset_db) │   │ (maintenance_db) │  │ (report_db│
+ └────────────┘  └────────────┘   └──────────────────┘  └───────────┘
+        │               │                    │              │
+        ▼               ▼                    ▼              ▼
+ ┌────────────────────────────────────────────────────────────────┐
+ │                    PostgreSQL (une base par service)           │
+ │  auth_db · asset_db · maintenance_db · inventory_db · reporting_db │
+ └────────────────────────────────────────────────────────────────┘
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Un conteneur PostgreSQL**, une base de données par service (isolation des données).
+- **API Gateway** Nginx : seul point d'entrée, routage par préfixe, headers de
+  sécurité, rate limiting.
+- **Authentification JWT** propagée entre services (claims : utilisateur, rôle).
+- **Frontend unique** (Blade + Livewire + Alpine.js + Tailwind CSS) consommant
+  uniquement la gateway.
+- Communication inter-services en HTTP REST avec propagation du token.
 
-## Learning Laravel
+## Structure du dépôt
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+patrimoine-etat/
+├── docs/            # Analyse, UML, compétences, finance, guide utilisateur, journal
+├── design/          # Captures et éléments de design (maquettes Figma)
+├── gateway/         # Configuration Nginx de l'API Gateway
+├── frontend/        # Application Laravel front (Blade + Livewire)
+├── services/        # Les 5 micro-services Laravel
+│   ├── auth-service/
+│   ├── asset-service/
+│   ├── maintenance-service/
+│   ├── inventory-service/
+│   └── reporting-service/
+├── docker/          # Dockerfiles, init.sql PostgreSQL
+├── docker-compose.yml
+├── Makefile
+├── .env.example
+└── README.md
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+> Note : une application Laravel « squelette » subsiste à la racine du dépôt
+> (héritée de l'initialisation du projet). Elle sera retirée ou réutilisée lors
+> de l'étape 13 (frontend).
 
-## Laravel Sponsors
+## Acteurs et rôles
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Rôle              | Responsabilités                                             |
+|-------------------|-------------------------------------------------------------|
+| `admin`           | Utilisateurs, rôles, référentiels                           |
+| `asset_manager`   | Biens, affectations, cessions                               |
+| `service_head`    | Biens de son service, demandes de transfert et maintenance  |
+| `accountant`      | Valeurs, amortissements, validation des cessions            |
+| `auditor`         | Lecture seule, journal d'audit                              |
 
-### Premium Partners
+## Prérequis
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Docker Desktop** (avec Docker Compose v2)
+- **Make** (optionnel — les commandes `docker compose` restent utilisables directement)
+- **Git**
+- PHP 8.3+ et Composer (uniquement pour le développement local hors Docker)
 
-## Contributing
+## Démarrage rapide
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# 1. Copier la configuration
+git clone <url-du-depot> patrimoine-etat
+cd patrimoine-etat
+cp .env.example .env
 
-## Code of Conduct
+# 2. Démarrer l'infrastructure
+docker compose up -d
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 3. Suivre les logs
+docker compose logs -f
 
-## Security Vulnerabilities
+# 4. Lancer les migrations (une fois les services initialisés)
+make migrate
+make seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Commandes utiles
 
-## License
+| Commande        | Action                                        |
+|-----------------|-----------------------------------------------|
+| `make up`       | Démarre tous les conteneurs                   |
+| `make down`     | Arrête tous les conteneurs                    |
+| `make build`    | Reconstruit les images                        |
+| `make logs`     | Affiche les logs de tous les services         |
+| `make migrate`  | Exécute les migrations sur tous les services  |
+| `make seed`     | Exécute les seeders de démonstration          |
+| `make test`     | Lance la suite de tests PHPUnit               |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Plan de réalisation
+
+Le projet est découpé en 22 étapes (0 à 21), chacune livrée sur une branche
+dédiée avec Pull Request vers `develop`. Le détail figure dans le brief de
+mission et le suivi est tenu dans `docs/`.
+
+## Documentation
+
+- `docs/analyse/` — cahier des charges et analyse fonctionnelle
+- `docs/uml/` — diagrammes PlantUML
+- `docs/competences/suivi-competences.md` — suivi des compétences mobilisées
+- `docs/journal/journal-de-bord.md` — journal des problèmes et décisions
+- `docs/guide/` — guide d'utilisation
+- `docs/fiche-technique.md` — documentation technique (étape 18)

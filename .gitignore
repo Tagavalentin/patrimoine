@@ -1,24 +1,36 @@
-*.log
-.DS_Store
+# Dépendances
+**/vendor/
+**/node_modules/
+
+# Environnement (ne jamais committer de secrets)
 .env
 .env.backup
 .env.production
-.phpactor.json
+**/.env
+!**/.env.example
+
+# Laravel (racine + services + frontend)
+*.log
 .phpunit.result.cache
-/.fleet
-/.idea
-/.nova
 /.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
+/storage/*.key
+/storage/pail
 /public/build
 /public/hot
 /public/storage
-/storage/*.key
-/storage/pail
-/vendor
+/auth.json
 Homestead.json
 Homestead.yaml
+.phpactor.json
+
+# IDE / OS
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/.DS_Store
 Thumbs.db
+
+# Docker
+.docker-data/
