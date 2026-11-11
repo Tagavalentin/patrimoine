@@ -97,6 +97,9 @@ services:
       DB_DATABASE: ${AUTH_DB:-auth_db}
       DB_USERNAME: ${POSTGRES_USER:-patrimoine}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   asset-service:
     <<: *laravel-service
@@ -108,6 +111,9 @@ services:
       DB_DATABASE: ${ASSET_DB:-asset_db}
       DB_USERNAME: ${POSTGRES_USER:-patrimoine}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   maintenance-service:
     <<: *laravel-service
@@ -119,6 +125,9 @@ services:
       DB_DATABASE: ${MAINTENANCE_DB:-maintenance_db}
       DB_USERNAME: ${POSTGRES_USER:-patrimoine}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   inventory-service:
     <<: *laravel-service
@@ -130,6 +139,9 @@ services:
       DB_DATABASE: ${INVENTORY_DB:-inventory_db}
       DB_USERNAME: ${POSTGRES_USER:-patrimoine}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   reporting-service:
     <<: *laravel-service
@@ -141,6 +153,9 @@ services:
       DB_DATABASE: ${REPORTING_DB:-reporting_db}
       DB_USERNAME: ${POSTGRES_USER:-patrimoine}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
 
   # ----------------------------------------------------------
   # Nginx par service (reverse proxy php-fpm)
