@@ -72,3 +72,26 @@ Format d'une entrée :
   always, limit_req_zone, proxy_pass avec URI).
 - Solution retenue : revue manuelle attentive ; validation `docker compose
   up` + `nginx -t` reportée à l'utilisateur (Docker absent).
+
+## 2026-11-11 — Étape 4 : auth-service
+
+- Problème : choix du mécanisme JWT — `tymon/jwt-auth` (lourd, pensant
+  sessions) vs implémentation dédiée.
+- Hypothèses : un JWT simple HS256 suffit pour 5 services internes.
+- Recherches : `firebase/php-jwt` (lib stable, sans dépendance Laravel).
+- Solution retenue : `firebase/php-jwt` + `JwtService` maison dans un « kit
+  JWT » copié dans chaque service (`shared/jwt/`), claims `sub/email/role`,
+  middlewares `jwt.auth` et `role:` sans accès BDD.
+
+- Problème : les autres services n'ont pas la table `users` de
+  l'auth-service — un middleware qui recharge l'utilisateur en base
+  renverrait toujours 401.
+- Hypothèses : chaque service pourrait dupliquer la table users.
+- Recherches : principe micro-services = pas de BDD partagée.
+- Solution retenue : les services font confiance aux claims signés
+  (`JwtUser`), seul l'auth-service connaît les utilisateurs.
+
+- Problème : `JwtUser implements Authenticatable` → méthode abstraite
+  `getAuthPasswordName()` manquante (contrat Laravel 12).
+- Solution retenue : implémentation explicite de toutes les méthodes du
+  contrat.
