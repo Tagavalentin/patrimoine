@@ -95,3 +95,18 @@ Format d'une entrée :
   `getAuthPasswordName()` manquante (contrat Laravel 12).
 - Solution retenue : implémentation explicite de toutes les méthodes du
   contrat.
+
+## 2026-11-11 — Étape 5 : asset-service, référentiels
+
+- Problème : `$this->authorize()` (Gate) renvoyait 403 partout alors que le
+  token était valide — Gate lit l'utilisateur via le guard `auth()`, pas via
+  le user resolver de la requête.
+- Hypothèses : `setUserResolver` suffisait pour les policies.
+- Recherches : `Gate::userResolver` utilise `AuthManager`, distinct du
+  resolver de `Request`.
+- Solution retenue : `AuthenticateJwt` appelle aussi `auth()->setUser($jwtUser)`
+  (ajout propagé au kit partagé `shared/jwt/` et à l'auth-service).
+
+- Problème : `is_active` valait `null` dans la réponse de création (défaut
+  SQL non reflété sur l'instance Eloquent).
+- Solution retenue : `$attributes = ['is_active' => true]` sur les modèles.

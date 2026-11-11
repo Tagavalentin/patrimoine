@@ -35,6 +35,9 @@ class AuthenticateJwt
 
         $request->attributes->set('jwt.claims', $claims);
         $request->setUserResolver(static fn (): JwtUser => $jwtUser);
+        // Enregistre aussi le principal auprès du guard pour que
+        // Gate / $this->authorize() (policies) fonctionnent.
+        auth()->setUser($jwtUser);
 
         return $next($request);
     }
