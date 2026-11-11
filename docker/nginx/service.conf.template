@@ -1,0 +1,56 @@
+# Configuration Nginx mutualisée pour les services Laravel.
+# Utilisée comme template par l'image officielle nginx (support des
+# variables d'environnement via /etc/nginx/templates/*.template).
+#
+# Variables attendues :
+#   PHP_UPSTREAM  -> nom:port du conteneur php-fpm (ex. asset-service:9000)
+#   SERVER_NAME   -> nom d'hôte interne (ex. asset-service)
+#   ROOT_PATH     -> racine web Laravel (défaut /var/www/html/public)
+
+# Format de log JSON (défini dans le contexte http via conf.d)
+log_format json_combined escape=json
+    '{"time":"$time_iso8601","remote":"$remote_addr","method":"$request_method",'
+    '"uri":"$request_uri","status":$status,"bytes":$body_bytes_sent,'
+    '"referer":"$http_referer","agent":"$http_user_agent",'
+    '"request_id":"$request_id","upstream":"$upstream_addr",'
+    '"request_time":$request_time}';
+
+upstream php_backend {
+    server ${PHP_UPSTREAM};
+}
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+    root ${ROOT_PATH};
+    index index.php index.html;
+
+    # Journalisation au format JSON pour faciliter l'agrégation des logs
+    access_log /var/log/nginx/access.log json_combined;
+    error_log  /var/log/nginx/error.log warn;
+
+    # Ne jamais exposer les fichiers sensibles
+    location ~ /\. {
+        deny all;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass php_backend;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        # Propager les en-têtes utiles aux API (token JWT, etc.)
+        fastcgi_param HTTP_AUTHORIZATION $http_authorization;
+    }
+
+    # Cache navigateur pour les assets statiques compilés
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+}

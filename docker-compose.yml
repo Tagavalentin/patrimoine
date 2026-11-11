@@ -1,0 +1,226 @@
+# ============================================================
+# docker-compose.yml — Patrimoine de l'État (architecture micro-services)
+#
+# - 1 conteneur PostgreSQL, une base par service (init.sql)
+# - 1 image PHP-FPM commune (docker/php/Dockerfile) pour les 5 services
+# - 1 conteneur Nginx par service (template mutualisé docker/nginx)
+# - Redis optionnel (cache / événements futurs)
+# - pgAdmin optionnel (profil "admin")
+#
+# Usage : docker compose up -d
+# ============================================================
+
+name: patrimoine-etat
+
+x-laravel-service: &laravel-service
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+  depends_on:
+    postgres:
+      condition: service_healthy
+  networks:
+    - patrimoine
+  restart: unless-stopped
+
+x-service-nginx: &service-nginx
+  image: nginx:1.27-alpine
+  networks:
+    - patrimoine
+  restart: unless-stopped
+
+services:
+
+  # ----------------------------------------------------------
+  # Infrastructure
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: patrimoine-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-patrimoine}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - patrimoine
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: patrimoine-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - patrimoine
+    restart: unless-stopped
+
+  # Interface d'administration PostgreSQL (optionnelle)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: patrimoine-pgadmin
+    profiles: ["admin"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@patrimoine.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # Micro-services Laravel (code injecté à l'étape 2)
+  # Chaque service = conteneur php-fpm + conteneur nginx dédié.
+  # ----------------------------------------------------------
+  auth-service:
+    <<: *laravel-service
+    container_name: patrimoine-auth-service
+    volumes:
+      - ./services/auth-service:/var/www/html
+    environment:
+      APP_NAME: "Auth Service"
+      DB_DATABASE: ${AUTH_DB:-auth_db}
+      DB_USERNAME: ${POSTGRES_USER:-patrimoine}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+
+  asset-service:
+    <<: *laravel-service
+    container_name: patrimoine-asset-service
+    volumes:
+      - ./services/asset-service:/var/www/html
+    environment:
+      APP_NAME: "Asset Service"
+      DB_DATABASE: ${ASSET_DB:-asset_db}
+      DB_USERNAME: ${POSTGRES_USER:-patrimoine}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+
+  maintenance-service:
+    <<: *laravel-service
+    container_name: patrimoine-maintenance-service
+    volumes:
+      - ./services/maintenance-service:/var/www/html
+    environment:
+      APP_NAME: "Maintenance Service"
+      DB_DATABASE: ${MAINTENANCE_DB:-maintenance_db}
+      DB_USERNAME: ${POSTGRES_USER:-patrimoine}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+
+  inventory-service:
+    <<: *laravel-service
+    container_name: patrimoine-inventory-service
+    volumes:
+      - ./services/inventory-service:/var/www/html
+    environment:
+      APP_NAME: "Inventory Service"
+      DB_DATABASE: ${INVENTORY_DB:-inventory_db}
+      DB_USERNAME: ${POSTGRES_USER:-patrimoine}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+
+  reporting-service:
+    <<: *laravel-service
+    container_name: patrimoine-reporting-service
+    volumes:
+      - ./services/reporting-service:/var/www/html
+    environment:
+      APP_NAME: "Reporting Service"
+      DB_DATABASE: ${REPORTING_DB:-reporting_db}
+      DB_USERNAME: ${POSTGRES_USER:-patrimoine}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-patrimoine}
+
+  # ----------------------------------------------------------
+  # Nginx par service (reverse proxy php-fpm)
+  # Accès directs temporaires — la gateway (étape 3) deviendra
+  # le point d'entrée unique.
+  # ----------------------------------------------------------
+  auth-service-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-auth-nginx
+    ports: ["8001:80"]
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./services/auth-service/public:/var/www/html/public:ro
+    depends_on:
+      - auth-service
+    environment:
+      PHP_UPSTREAM: auth-service:9000
+      SERVER_NAME: auth-service
+      ROOT_PATH: /var/www/html/public
+
+  asset-service-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-asset-nginx
+    ports: ["8002:80"]
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./services/asset-service/public:/var/www/html/public:ro
+    depends_on:
+      - asset-service
+    environment:
+      PHP_UPSTREAM: asset-service:9000
+      SERVER_NAME: asset-service
+      ROOT_PATH: /var/www/html/public
+
+  maintenance-service-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-maintenance-nginx
+    ports: ["8003:80"]
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./services/maintenance-service/public:/var/www/html/public:ro
+    depends_on:
+      - maintenance-service
+    environment:
+      PHP_UPSTREAM: maintenance-service:9000
+      SERVER_NAME: maintenance-service
+      ROOT_PATH: /var/www/html/public
+
+  inventory-service-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-inventory-nginx
+    ports: ["8004:80"]
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./services/inventory-service/public:/var/www/html/public:ro
+    depends_on:
+      - inventory-service
+    environment:
+      PHP_UPSTREAM: inventory-service:9000
+      SERVER_NAME: inventory-service
+      ROOT_PATH: /var/www/html/public
+
+  reporting-service-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-reporting-nginx
+    ports: ["8005:80"]
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./services/reporting-service/public:/var/www/html/public:ro
+    depends_on:
+      - reporting-service
+    environment:
+      PHP_UPSTREAM: reporting-service:9000
+      SERVER_NAME: reporting-service
+      ROOT_PATH: /var/www/html/public
+
+networks:
+  patrimoine:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:

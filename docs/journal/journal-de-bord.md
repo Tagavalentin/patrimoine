@@ -35,3 +35,24 @@ Format d'une entrée :
 - Solution retenue : le signaler comme prérequis bloquant pour l'étape 1 ;
   poursuite de l'étape 0 qui n'exige pas Docker. Les PR seront ouvertes via les
   URL de comparaison GitHub en l'absence de `gh`.
+
+## 2026-11-11 — Étape 1 : Infrastructure Docker
+
+- Problème : Docker Desktop absent de la machine → impossible d'exécuter
+  `docker compose up -d` pour valider le critère d'acceptation.
+- Hypothèses : l'utilisateur peut installer Docker Desktop entre-temps.
+- Recherches : vérification `docker --version` en bash et PowerShell → absent.
+- Solution retenue : écrire et valider statiquement toute l'infrastructure
+  (syntaxe YAML vérifiée avec PyYAML), documenter les ports, et reporter la
+  validation runtime à l'utilisateur.
+
+- Problème : `docker-compose.yml` — un ancrage YAML (`x-service-nginx`) avec
+  variables `${SERVICE_DIR}`/`${SERVICE_NAME}` ne fonctionne pas, car les
+  variables d'environnement de service ne servent pas à l'interpolation des
+  champs compose.
+- Hypothèses : utiliser des ancres avec champs paramétrés par service.
+- Recherches : documentation Docker Compose sur les ancres YAML et
+  l'interpolation des variables.
+- Solution retenue : ancres limitées aux champs strictement communs
+  (image, réseaux, restart) ; volumes, ports, depends_on et environment
+  écrits explicitement pour chaque service nginx.

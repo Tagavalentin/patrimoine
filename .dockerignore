@@ -1,0 +1,13 @@
+# Dépendances et artefacts à exclure des images Docker
+.git
+**/vendor
+**/node_modules
+**/.env
+!**/.env.example
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+*.md
+docs
+design

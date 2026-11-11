@@ -98,6 +98,20 @@ make migrate
 make seed
 ```
 
+## Ports exposés
+
+| Port hôte | Service                | Usage                              |
+|-----------|------------------------|------------------------------------|
+| 80        | gateway (étape 3)      | Point d'entrée unique de l'API     |
+| 5432      | postgres               | Base de données                   |
+| 6379      | redis                  | Cache / événements                 |
+| 8001      | auth-service-nginx     | Accès direct temporaire            |
+| 8002      | asset-service-nginx    | Accès direct temporaire            |
+| 8003      | maintenance-service-nginx | Accès direct temporaire         |
+| 8004      | inventory-service-nginx| Accès direct temporaire            |
+| 8005      | reporting-service-nginx| Accès direct temporaire            |
+| 5050      | pgadmin (profil admin) | `docker compose --profile admin up -d` |
+
 ## Commandes utiles
 
 | Commande        | Action                                        |
