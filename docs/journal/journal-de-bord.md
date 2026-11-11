@@ -124,3 +124,17 @@ Format d'une entrée :
 - Solution retenue : enum `AssetStatus` adossé à une table de transitions
   explicite, endpoint dédié `POST /assets/{id}/status`, historique complet
   dans `asset_status_histories` (from/to/motif/auteur).
+
+## 2026-11-11 — Étape 7 : affectation et transfert
+
+- Problème : erreurs de syntaxe PHP (`'.` orphelin, `new X()->response()`
+  sans parenthèses) détectées par `php -l` avant exécution des tests.
+- Solution retenue : `php -l` systématique sur les nouveaux fichiers ;
+  parenthésage `(new Resource($model))->response()`.
+
+- Problème : `responsible_user_id` référence un utilisateur de
+  l'auth-service — pas de clé étrangère possible entre bases.
+- Hypothèses : dupliquer la table users ou exposer une API users.
+- Recherches : cohérence micro-services (pas de jointure inter-bases).
+- Solution retenue : stocker l'id + un instantané `responsible_name` /
+  `responsible_email` dans `assignments` — traçabilité sans couplage.

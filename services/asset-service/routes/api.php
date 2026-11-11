@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AssetController;
+use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\LocationController;
@@ -32,4 +33,11 @@ Route::middleware('jwt.auth')->group(function (): void {
     Route::apiResource('assets', AssetController::class)
         ->only(['index', 'store', 'show', 'update', 'destroy']);
     Route::post('assets/{asset}/status', [AssetController::class, 'updateStatus']);
+
+    // Affectations : affecter, transférer, restituer, historique
+    Route::get('assignments', [AssignmentController::class, 'index']);
+    Route::get('assets/{asset}/assignments', [AssignmentController::class, 'history']);
+    Route::post('assets/{asset}/assign', [AssignmentController::class, 'assign']);
+    Route::post('assets/{asset}/transfer', [AssignmentController::class, 'transfer']);
+    Route::post('assets/{asset}/return', [AssignmentController::class, 'returnAsset']);
 });
