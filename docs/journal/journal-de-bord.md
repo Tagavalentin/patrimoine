@@ -56,3 +56,19 @@ Format d'une entrée :
 - Solution retenue : ancres limitées aux champs strictement communs
   (image, réseaux, restart) ; volumes, ports, depends_on et environment
   écrits explicitement pour chaque service nginx.
+
+## 2026-11-11 — Étape 3 : API Gateway
+
+- Problème : les nginx internes des services exposaient les ports 8001–8005
+  sur l'hôte, alors que la gateway doit être le point d'entrée unique.
+- Hypothèses : garder les ports pour le débogage.
+- Recherches : critère d'acceptation « joignables uniquement via la gateway ».
+- Solution retenue : suppression des `ports:` des 5 nginx internes ; accès
+  direct possible uniquement dans le réseau Docker (documenté dans le README).
+
+- Problème : nginx ne peut pas être validé (`nginx -t`) sans Docker.
+- Hypothèses : la configuration peut être relue manuellement.
+- Recherches : vérification des directives utilisées (if/return, add_header
+  always, limit_req_zone, proxy_pass avec URI).
+- Solution retenue : revue manuelle attentive ; validation `docker compose
+  up` + `nginx -t` reportée à l'utilisateur (Docker absent).

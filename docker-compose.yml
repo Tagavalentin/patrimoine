@@ -165,7 +165,6 @@ services:
   auth-service-nginx:
     <<: *service-nginx
     container_name: patrimoine-auth-nginx
-    ports: ["8001:80"]
     volumes:
       - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./services/auth-service/public:/var/www/html/public:ro
@@ -179,7 +178,6 @@ services:
   asset-service-nginx:
     <<: *service-nginx
     container_name: patrimoine-asset-nginx
-    ports: ["8002:80"]
     volumes:
       - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./services/asset-service/public:/var/www/html/public:ro
@@ -193,7 +191,6 @@ services:
   maintenance-service-nginx:
     <<: *service-nginx
     container_name: patrimoine-maintenance-nginx
-    ports: ["8003:80"]
     volumes:
       - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./services/maintenance-service/public:/var/www/html/public:ro
@@ -207,7 +204,6 @@ services:
   inventory-service-nginx:
     <<: *service-nginx
     container_name: patrimoine-inventory-nginx
-    ports: ["8004:80"]
     volumes:
       - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./services/inventory-service/public:/var/www/html/public:ro
@@ -221,7 +217,6 @@ services:
   reporting-service-nginx:
     <<: *service-nginx
     container_name: patrimoine-reporting-nginx
-    ports: ["8005:80"]
     volumes:
       - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./services/reporting-service/public:/var/www/html/public:ro
@@ -231,6 +226,28 @@ services:
       PHP_UPSTREAM: reporting-service:9000
       SERVER_NAME: reporting-service
       ROOT_PATH: /var/www/html/public
+
+  # ----------------------------------------------------------
+  # API Gateway — point d'entrée unique (port 80)
+  # Route /api/{auth,assets,maintenance,inventory,reports}/*
+  # ----------------------------------------------------------
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: patrimoine-gateway
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/proxy_params_common.conf:/etc/nginx/proxy_params_common.conf:ro
+    depends_on:
+      - auth-service-nginx
+      - asset-service-nginx
+      - maintenance-service-nginx
+      - inventory-service-nginx
+      - reporting-service-nginx
+    networks:
+      - patrimoine
+    restart: unless-stopped
 
 networks:
   patrimoine:

@@ -102,15 +102,15 @@ make seed
 
 | Port hôte | Service                | Usage                              |
 |-----------|------------------------|------------------------------------|
-| 80        | gateway (étape 3)      | Point d'entrée unique de l'API     |
+| 80        | gateway                | **Point d'entrée unique de l'API** |
 | 5432      | postgres               | Base de données                   |
 | 6379      | redis                  | Cache / événements                 |
-| 8001      | auth-service-nginx     | Accès direct temporaire            |
-| 8002      | asset-service-nginx    | Accès direct temporaire            |
-| 8003      | maintenance-service-nginx | Accès direct temporaire         |
-| 8004      | inventory-service-nginx| Accès direct temporaire            |
-| 8005      | reporting-service-nginx| Accès direct temporaire            |
 | 5050      | pgadmin (profil admin) | `docker compose --profile admin up -d` |
+
+Les nginx internes des services (ports 8001–8005) ne sont **plus exposés** sur
+l'hôte : tout le trafic passe par la gateway. Ils restent joignables à
+l'intérieur du réseau Docker pour le débogage (`docker compose exec gateway
+wget -qO- http://asset-service-nginx/api/health`).
 
 ## Commandes utiles
 
