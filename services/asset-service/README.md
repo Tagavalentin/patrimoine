@@ -18,11 +18,14 @@ Micro-service Laravel de l'architecture Patrimoine de l'État.
 - **Sorties de patrimoine** (`disposals`) : demande (admin/asset_manager)
   → approbation admin (bien → `decommissioned`) → réalisation admin
   (bien → `disposed`, prix de cession possible) ; rejet avec motif.
+- **Amortissement linéaire** : valorisation nette comptable calculée
+  à la volée (mois pleins, plancher 0), échéancier annuel,
+  synthèse portefeuille hors biens sortis.
 
 ## Endpoints principaux (JWT requis)
 
 `/categories`, `/locations`, `/departments`, `/assets` (CRUD +
-`POST /assets/{id}/status`), `/assignments`, `/disposals`
+`POST /assets/{id}/status`), `/assignments`, `/disposals`, `/depreciation`
 (détail dans `routes/api.php`).
 
 ## Développement
@@ -30,5 +33,5 @@ Micro-service Laravel de l'architecture Patrimoine de l'État.
 ```bash
 cd services/asset-service
 composer install
-php artisan test   # 54 tests
+php artisan test   # 61 tests
 ```

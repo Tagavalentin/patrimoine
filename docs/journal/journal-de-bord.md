@@ -202,3 +202,22 @@ Format d'une entrée :
 - Problème : `assertJsonPath` compare strictement — `300000.0`
   attendu vs `300000` reçu (JSON n'a pas de distinction int/float).
 - Solution retenue : comparer via `(float)` sur la valeur décodée.
+
+## 2026-11-11 — Étape 11 : amortissement linéaire
+
+- Problème : faut-il une table `depreciation_entries` pour figer les
+  dotations annuelles ?
+- Hypothèses : table obligatoire pour l'audit.
+- Recherches : la valorisation est une projection déterministe de
+  `acquisition_date` / `acquisition_value` / `useful_life_years`.
+- Solution retenue : **calcul à la volée** (dotation mensuelle
+  proratisée, plancher 0, durée de vie bornée) — pas de table, pas de
+  risque de désynchronisation ; l'échéancier annuel est généré à la
+  demande. Une table figée pourra être ajoutée si une clôture
+  comptable annuelle est exigée (noté comme évolution).
+
+- Problème : `diffInMonths` compte les mois pleins — une date
+  d'acquisition au 1er et une valorisation au 31/12 de la 3e année
+  donnent 35 mois, pas 36.
+- Solution retenue : convention « mois pleins écoulés » documentée
+  dans `DepreciationService` ; test aligné sur ce comportement.

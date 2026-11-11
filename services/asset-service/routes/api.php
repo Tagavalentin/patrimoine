@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\DepreciationController;
 use App\Http\Controllers\Api\DisposalController;
 use App\Http\Controllers\Api\LocationController;
 use Illuminate\Support\Facades\Route;
@@ -51,4 +52,9 @@ Route::middleware('jwt.auth')->group(function (): void {
     Route::post('disposals/{disposal}/reject', [DisposalController::class, 'reject']);
     Route::post('disposals/{disposal}/complete', [DisposalController::class, 'complete']);
     Route::delete('disposals/{disposal}', [DisposalController::class, 'destroy']);
+
+    // Amortissement linéaire : valorisation et échéancier
+    Route::get('depreciation/summary', [DepreciationController::class, 'summary']);
+    Route::get('assets/{asset}/depreciation', [DepreciationController::class, 'show']);
+    Route::get('assets/{asset}/depreciation/schedule', [DepreciationController::class, 'schedule']);
 });
