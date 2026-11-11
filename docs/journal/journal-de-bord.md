@@ -110,3 +110,17 @@ Format d'une entrée :
 - Problème : `is_active` valait `null` dans la réponse de création (défaut
   SQL non reflété sur l'instance Eloquent).
 - Solution retenue : `$attributes = ['is_active' => true]` sur les modèles.
+
+## 2026-11-11 — Étape 6 : asset-service, gestion des biens
+
+- Problème : génération du code métier `AST-AAAA-NNNN` sans collision en
+  concurrence.
+- Hypothèses : `count()+1` suffit.
+- Recherches : table dédiée + `lockForUpdate` en transaction.
+- Solution retenue : table `asset_counters` (année → dernier numéro)
+  verrouillée dans `DB::transaction` — scalable et sans trou de concurrence.
+
+- Problème : le statut ne doit pas être modifiable via le CRUD classique.
+- Solution retenue : enum `AssetStatus` adossé à une table de transitions
+  explicite, endpoint dédié `POST /assets/{id}/status`, historique complet
+  dans `asset_status_histories` (from/to/motif/auteur).

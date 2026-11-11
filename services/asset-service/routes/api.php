@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\LocationController;
@@ -26,4 +27,9 @@ Route::middleware('jwt.auth')->group(function (): void {
 
     Route::apiResource('departments', DepartmentController::class)
         ->only(['index', 'store', 'show', 'update', 'destroy']);
+
+    // Biens — code généré automatiquement, statut via machine à états
+    Route::apiResource('assets', AssetController::class)
+        ->only(['index', 'store', 'show', 'update', 'destroy']);
+    Route::post('assets/{asset}/status', [AssetController::class, 'updateStatus']);
 });
