@@ -138,3 +138,28 @@ Format d'une entrée :
 - Recherches : cohérence micro-services (pas de jointure inter-bases).
 - Solution retenue : stocker l'id + un instantané `responsible_name` /
   `responsible_email` dans `assignments` — traçabilité sans couplage.
+
+## 2026-11-11 — Étape 8 : maintenance-service
+
+- Problème : le bien (`assets`) vit dans `asset_db`, inaccessible en SQL
+  depuis `maintenance_db` — la demande doit quand même vérifier son
+  existence et faire évoluer son statut.
+- Hypothèses : duplication de la table assets dans maintenance_db.
+- Recherches : communication service-à-service en REST avec propagation
+  du JWT (exigence du cahier des charges).
+- Solution retenue : `AssetServiceClient` (Http client, timeout 5 s,
+  token propagé) + instantané `asset_code`/`asset_designation`/
+  `asset_status` dans `maintenance_requests` pour l'affichage sans
+  appel supplémentaire. Indisponibilité → 503 explicite, rollback
+  transactionnel de la demande.
+
+- Problème : `JwtUser` expose `id()`, `email()`, `role()` en méthodes —
+  `$user->id` / `$user->role` provoquent des erreurs.
+- Solution retenue : `getAuthIdentifier()` et `role()` partout ;
+  documenté dans `shared/jwt` pour les prochains services.
+
+- Problème : le statut de la demande n'était pas persisté lors du
+  passage `requested → scheduled` (seule la validation de transition
+  était faite).
+- Solution retenue : chaque transition écrit explicitement le nouveau
+  statut + horodatages (`scheduled_date`, `started_at`, `completed_at`).
