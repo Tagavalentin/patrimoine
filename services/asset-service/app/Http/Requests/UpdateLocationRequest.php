@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Location;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,7 @@ class UpdateLocationRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var \App\Models\Location $location */
+        /** @var Location $location */
         $location = $this->route('location');
 
         return [

@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class AuthenticateJwt
 {
     public function __construct(private readonly JwtService $jwt) {}
+
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();

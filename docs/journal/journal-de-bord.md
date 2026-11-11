@@ -183,3 +183,22 @@ Format d'une entrée :
 - Problème : index dupliqué `check_status` (inline + explicite)
   → erreur SQLite en test.
 - Solution retenue : index inline conservé, explicite retiré.
+
+## 2026-11-11 — Étape 10 : cessions et déclassements
+
+- Problème : la sortie de patrimoine doit respecter le cycle de vie
+  du bien (acquis → … → réformé → sorti) et interdire les sorties
+  d'un bien encore affecté.
+- Hypothèses : suppression directe du bien ou statut manuel.
+- Recherches : workflow de validation (demande → approbation →
+  réalisation) cohérent avec le RBAC (asset_manager demande,
+  admin décide).
+- Solution retenue : table `disposals` (référence DSP-AAAA-NNNN,
+  type sale/donation/destruction/written_off, valeurs estimée et
+  de cession) ; à l'approbation le bien passe `decommissioned`
+  (historisé), à la réalisation `disposed` (terminal). Une seule
+  demande active par bien ; rejet avec motif obligatoire.
+
+- Problème : `assertJsonPath` compare strictement — `300000.0`
+  attendu vs `300000` reçu (JSON n'a pas de distinction int/float).
+- Solution retenue : comparer via `(float)` sur la valeur décodée.

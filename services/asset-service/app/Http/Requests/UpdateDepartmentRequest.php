@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Department;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,7 @@ class UpdateDepartmentRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var \App\Models\Department $department */
+        /** @var Department $department */
         $department = $this->route('department');
 
         return [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\AssetStatus;
+use Database\Factories\AssetFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asset extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssetFactory> */
+    /** @use HasFactory<AssetFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -59,6 +60,11 @@ class Asset extends Model
     public function statusHistories(): HasMany
     {
         return $this->hasMany(AssetStatusHistory::class)->latest();
+    }
+
+    public function disposals(): HasMany
+    {
+        return $this->hasMany(Disposal::class)->latest();
     }
 
     public function isDisposed(): bool

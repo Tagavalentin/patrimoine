@@ -9,6 +9,7 @@ use App\Models\Asset;
 use App\Models\Assignment;
 use App\Models\Department;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -154,7 +155,7 @@ class AssignmentService
             ->paginate((int) ($filters['per_page'] ?? 15));
     }
 
-    /** @return \Illuminate\Support\Collection<int, Assignment> */
+    /** @return Collection<int, Assignment> */
     public function historyFor(Asset $asset)
     {
         return Assignment::where('asset_id', $asset->id)

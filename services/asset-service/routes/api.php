@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\DisposalController;
 use App\Http\Controllers\Api\LocationController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +41,14 @@ Route::middleware('jwt.auth')->group(function (): void {
     Route::post('assets/{asset}/assign', [AssignmentController::class, 'assign']);
     Route::post('assets/{asset}/transfer', [AssignmentController::class, 'transfer']);
     Route::post('assets/{asset}/return', [AssignmentController::class, 'returnAsset']);
+
+    // Sorties de patrimoine : demande, approbation, réalisation
+    Route::get('disposals', [DisposalController::class, 'index']);
+    Route::get('assets/{asset}/disposals', [DisposalController::class, 'history']);
+    Route::post('assets/{asset}/disposals', [DisposalController::class, 'store']);
+    Route::get('disposals/{disposal}', [DisposalController::class, 'show']);
+    Route::post('disposals/{disposal}/approve', [DisposalController::class, 'approve']);
+    Route::post('disposals/{disposal}/reject', [DisposalController::class, 'reject']);
+    Route::post('disposals/{disposal}/complete', [DisposalController::class, 'complete']);
+    Route::delete('disposals/{disposal}', [DisposalController::class, 'destroy']);
 });
