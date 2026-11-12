@@ -322,3 +322,30 @@ Format d'une entrée :
   `Undefined array key` dans Blade.
 - Solution retenue : `?? null` sur les clés optionnelles des vues
   (dates, noms) — les resources API omettent les champs null.
+
+## 2026-11-11 — Étape 16 : frontend — écrans inventaires + rapports
+
+- Réalisé : inventaires (liste filtrable, création avec périmètre
+  département/localisation, fiche avec synthèse des écarts, contrôle
+  des lignes en ligne — found/missing/damaged + notes — et actions
+  start/complete réservées aux gestionnaires) ; rapports (cartes
+  d'export CSV + journal d'audit des exports pour admin/auditor).
+
+- Problème : un `<a href>` ne peut pas envoyer le JWT en header —
+  les exports CSV exigeaient un accès authentifié.
+- Solution retenue : route web `/rapports/export/{type}`
+  (`ExportController`) qui récupère le CSV auprès de la gateway avec
+  le token de session et le sert en pièce jointe ; le type est
+  validé contre une liste blanche et l'audit reste tracé côté
+  reporting-service (acteur = claims JWT propagés).
+
+- Problème : `GatewayClient` ne savait retourner que du JSON.
+- Solution retenue : méthode `download()` retournant la
+  `Http\Client\Response` brute pour le relais CSV ; `patch()` ajouté
+  pour le contrôle des lignes d'inventaire.
+
+- Problème : le contrôle des lignes doit être possible pour
+  l'auditeur (il constate) mais pas start/complete.
+- Solution retenue : deux gardes distincts `canManage()`
+  (admin/asset_manager) et `canCheck()` (+ auditor), reflétant la
+  policy `InventoryCampaignPolicy` du service.

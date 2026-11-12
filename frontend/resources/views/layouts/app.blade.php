@@ -30,8 +30,14 @@
                    class="block rounded-lg px-3 py-2 {{ request()->routeIs('maintenance.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
                     Maintenance
                 </a>
-                <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Inventaires</span>
-                <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Rapports</span>
+                <a href="{{ route('inventory.index') }}"
+                   class="block rounded-lg px-3 py-2 {{ request()->routeIs('inventory.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
+                    Inventaires
+                </a>
+                <a href="{{ route('reports.index') }}"
+                   class="block rounded-lg px-3 py-2 {{ request()->routeIs('reports.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
+                    Rapports
+                </a>
             </nav>
         </aside>
 

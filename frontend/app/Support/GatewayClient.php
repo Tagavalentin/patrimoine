@@ -39,6 +39,26 @@ class GatewayClient
         )->json() ?? [];
     }
 
+    /**
+     * Téléchargement brut (exports CSV) — retourne la réponse HTTP
+     * pour que le contrôleur la relaie telle quelle au navigateur.
+     */
+    public function download(string $path): Response
+    {
+        return $this->send(fn () => $this->request()->get($this->url($path)));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function patch(string $path, array $data = []): array
+    {
+        return $this->send(
+            fn () => $this->request()->patch($this->url($path), $data),
+        )->json() ?? [];
+    }
+
     public function delete(string $path): ?Response
     {
         return $this->send(fn () => $this->request()->delete($this->url($path)));

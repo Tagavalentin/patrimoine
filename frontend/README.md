@@ -82,9 +82,11 @@ app/
 | `/maintenance` | Liste des demandes, filtres statut/priorité, pagination |
 | `/maintenance/nouvelle` | Création : sélecteur de bien, priorité, description |
 | `/maintenance/{id}` | Fiche : détail, interventions, actions workflow (planifier/démarrer/terminer) — réservées admin/asset_manager |
-
-Les écrans suivants (inventaires, rapports, exports) seront ajoutés
-dans les prochaines étapes.
+| `/inventaires` | Liste des campagnes, filtres statut/recherche |
+| `/inventaires/nouvelle` | Création : nom + périmètre département/localisation |
+| `/inventaires/{id}` | Fiche : synthèse des écarts, contrôle des lignes (trouvé/manquant/endommagé), start/complete — gestionnaires ; contrôle aussi auditeur |
+| `/rapports` | Cartes d'export CSV + journal d'audit des exports (admin/auditor) |
+| `/rapports/export/{type}` | Relais authentifié des exports CSV (biens, maintenance, inventaire) |
 resources/views/
 ├── layouts/app.blade.php                # layout principal (sidebar + topbar)
 ├── auth/login.blade.php                 # écran de connexion
