@@ -19,6 +19,10 @@
                    class="block rounded-lg px-3 py-2 {{ request()->routeIs('dashboard') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
                     Tableau de bord
                 </a>
+                <a href="{{ route('assets.index') }}"
+                   class="block rounded-lg px-3 py-2 {{ request()->routeIs('assets.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
+                    Biens
+                </a>
                 {{-- Entrées futures — branchées aux écrans des étapes suivantes --}}
                 <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Biens</span>
                 <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Affectations</span>

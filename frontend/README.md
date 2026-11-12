@@ -62,8 +62,26 @@ app/
 ├── Http/
 │   ├── Controllers/AuthController.php   # login/logout via gateway
 │   └── Middleware/EnsureFrontendAuth.php
-├── Livewire/Dashboard.php               # tableau de bord (socle)
-└── Support/GatewayClient.php            # client HTTP unique vers la gateway
+├── Livewire/
+│   ├── Dashboard.php                    # tableau de bord consolidé (/api/reports/dashboard)
+│   └── Assets/
+│       ├── Index.php                    # liste des biens, filtres + pagination (/biens)
+│       └── Show.php                     # fiche bien : infos, VNC, affectations (/biens/{id})
+└── Support/
+    ├── GatewayClient.php                # client HTTP unique vers la gateway
+    └── StatusPresenter.php              # libellés FR + badges des statuts métier
+```
+
+## Écrans
+
+| Route | Contenu |
+|---|---|
+| `/dashboard` | KPIs (biens, VNC, maintenance ouverte, dernier inventaire), répartitions par statut |
+| `/biens` | Recherche plein texte, filtres statut/catégorie, pagination (15/page) |
+| `/biens/{id}` | Fiche : informations, valorisation (amortissement), historique des affectations |
+
+Les écrans suivants (affectations, maintenance, inventaires, rapports,
+exports) seront ajoutés dans les prochaines étapes.
 resources/views/
 ├── layouts/app.blade.php                # layout principal (sidebar + topbar)
 ├── auth/login.blade.php                 # écran de connexion

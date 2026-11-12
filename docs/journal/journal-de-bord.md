@@ -269,3 +269,31 @@ Format d'une entrée :
 
 - Problème : `SESSION_DRIVER=database` du squelette exige une table sessions.
 - Solution retenue : `SESSION_DRIVER=file` — le frontend n'a pas besoin de BDD.
+
+## 2026-11-11 — Étape 14 : frontend — écrans (dashboard + biens)
+
+- Problème : pas de maquettes Figma disponibles.
+- Solution retenue : charte sobre cohérente avec le layout de l'étape 13
+  (cartes blanches, badges de statut colorés, tableaux) — validée par
+  l'utilisateur.
+
+- Problème : les composants Livewire full-page ne s'affichaient pas
+  (layout vide).
+- Recherches : `->layout()` de Livewire 4 injecte via `@component` +
+  `{{ $slot }}` ; `->extends()` injecte via `@section('content')`.
+- Solution retenue : `->extends('layouts.app')` — compatible avec le
+  `@yield('content')` du layout Blade existant, sans le convertir en
+  composant Blade.
+
+- Problème : collision entre le paramètre de route `{asset}` et la
+  propriété publique `$asset` du composant (Livewire hydrate les deux).
+- Solution retenue : propriété renommée `$assetData`.
+
+- Problème : `StatusPresenter` renvoyait des tableaux positionnels pour
+  les maps et associatifs pour le défaut → `Undefined array key`.
+- Solution retenue : toutes les entrées sont associatives
+  `['label','class']`.
+
+- Problème : les hooks `updated*` Livewire ne rechargeaient pas les
+  données après changement de filtre.
+- Solution retenue : `reload()` mutualisé (reset page + appel gateway).
