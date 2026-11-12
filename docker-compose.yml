@@ -173,6 +173,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
       JWT_TTL: ${JWT_TTL:-60}
       JWT_ISSUER: ${JWT_ISSUER:-patrimoine-auth-service}
+      ASSET_SERVICE_URL: http://asset-service-nginx
+      MAINTENANCE_SERVICE_URL: http://maintenance-service-nginx
+      INVENTORY_SERVICE_URL: http://inventory-service-nginx
 
   # ----------------------------------------------------------
   # Nginx par service (reverse proxy php-fpm)

@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Services internes Patrimoine
+    |--------------------------------------------------------------------------
+    */
+
+    'internal' => [
+        'asset' => env('ASSET_SERVICE_URL', 'http://asset-service-nginx'),
+        'maintenance' => env('MAINTENANCE_SERVICE_URL', 'http://maintenance-service-nginx'),
+        'inventory' => env('INVENTORY_SERVICE_URL', 'http://inventory-service-nginx'),
+    ],
+
 ];

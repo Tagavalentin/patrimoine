@@ -221,3 +221,27 @@ Format d'une entrée :
   donnent 35 mois, pas 36.
 - Solution retenue : convention « mois pleins écoulés » documentée
   dans `DepreciationService` ; test aligné sur ce comportement.
+
+## 2026-11-11 — Étape 12 : reporting-service
+
+- Problème : le reporting doit agréger des données de 3 services
+  sans base partagée.
+- Hypothèses : chaque service expose ses données ; le reporting
+  interroge les API.
+- Recherches : endpoints de comptage par statut (`meta.total` des
+  listes paginées) + endpoint dédié `/depreciation/summary`.
+- Solution retenue : `ServiceClient` générique (token propagé,
+  timeout 10 s, 503 si indisponible) ; dashboard = comptages par
+  statut + valorisation + synthèse maintenance + dernière campagne
+  d'inventaire. Exports CSV en français (séparateur `;`, BOM UTF-8
+  pour Excel) sur toutes les pages.
+
+- Problème : journaliser qui a généré quel rapport (exigence audit).
+- Solution retenue : table `report_audit_logs` en ajout seul
+  (`UPDATED_AT = null`) : type, format, filtres JSON, nb lignes,
+  auteur, IP — consultable par admin/auditor.
+
+- Problème : les callbacks `Http::fake` Laravel doivent retourner
+  `Http::response()`, pas un tableau.
+- Solution retenue : closures `function ($request) { return
+  Http::response([...]); }` ; fixture dédiée quand `per_page=100`.
