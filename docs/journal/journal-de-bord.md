@@ -245,3 +245,27 @@ Format d'une entrée :
   `Http::response()`, pas un tableau.
 - Solution retenue : closures `function ($request) { return
   Http::response([...]); }` ; fixture dédiée quand `per_page=100`.
+
+## 2026-11-11 — Étape 13 : frontend (socle + authentification)
+
+- Problème : où placer le frontend sans toucher au squelette Laravel racine ?
+- Hypothèses : le squelette racine doit rester intact ; un second projet
+  Laravel est acceptable.
+- Solution retenue : application dédiée `frontend/` (Laravel 12), le
+  squelette racine est conservé tel quel. Le frontend ne parle qu'à la
+  **gateway** (`GATEWAY_URL`) — jamais aux services directement.
+
+- Problème : comment propager l'identité JWT dans une app Blade/Livewire ?
+- Hypothèses : sessions Laravel classiques + appels serveur-à-serveur.
+- Solution retenue : `AuthController` appelle `POST /api/auth/login` sur la
+  gateway, stocke `jwt_token` + `jwt_user` (id/nom/email/rôle) en session ;
+  `GatewayClient` injecte le token dans `Authorization: Bearer` à chaque
+  appel ; middleware `frontend.auth` protège les pages ; logout = appel
+  `/api/auth/logout` (best effort) + invalidation de session.
+
+- Problème : le manifest Vite fait échouer les tests feature.
+- Solution retenue : `npm run build` avant les tests ; `public/build`
+  gitignoré — documenté dans le README frontend (requis aussi pour Docker).
+
+- Problème : `SESSION_DRIVER=database` du squelette exige une table sessions.
+- Solution retenue : `SESSION_DRIVER=file` — le frontend n'a pas besoin de BDD.

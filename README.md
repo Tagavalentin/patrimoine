@@ -59,8 +59,9 @@ patrimoine-etat/
 ```
 
 > Note : une application Laravel « squelette » subsiste à la racine du dépôt
-> (héritée de l'initialisation du projet). Elle sera retirée ou réutilisée lors
-> de l'étape 13 (frontend).
+> (héritée de l'initialisation du projet) et est volontairement conservée.
+> L'application frontend vit dans `frontend/` (Laravel 12, Blade + Livewire +
+> Alpine + Tailwind) et consomme l'API **exclusivement via la gateway**.
 
 ## Acteurs et rôles
 

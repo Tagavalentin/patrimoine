@@ -248,6 +248,36 @@ services:
       ROOT_PATH: /var/www/html/public
 
   # ----------------------------------------------------------
+  # Frontend Laravel (Blade/Livewire) — consomme la gateway
+  # Prérequis : cd frontend && npm install && npm run build
+  # ----------------------------------------------------------
+  frontend:
+    <<: *laravel-service
+    container_name: patrimoine-frontend
+    volumes:
+      - ./frontend:/var/www/html
+    environment:
+      APP_NAME: "Gestion du Patrimoine"
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      GATEWAY_URL: http://gateway
+
+  frontend-nginx:
+    <<: *service-nginx
+    container_name: patrimoine-frontend-nginx
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    volumes:
+      - ./docker/nginx/service.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./frontend/public:/var/www/html/public:ro
+    depends_on:
+      - frontend
+    environment:
+      PHP_UPSTREAM: frontend:9000
+      SERVER_NAME: frontend
+      ROOT_PATH: /var/www/html/public
+
+  # ----------------------------------------------------------
   # API Gateway — point d'entrée unique (port 80)
   # Route /api/{auth,assets,maintenance,inventory,reports}/*
   # ----------------------------------------------------------
