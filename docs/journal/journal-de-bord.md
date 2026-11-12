@@ -364,3 +364,21 @@ Format d'une entrée :
 - Solution retenue : filtres disponibles côté API uniquement ; la
   recherche fine reste possible depuis la fiche bien
   (`/biens/{id}` affiche l'historique complet des affectations).
+
+## 2026-11-11 — Étape 18 : qualité, sécurité & documentation
+
+- Réalisé : middleware `SecurityHeaders` frontend (nosniff,
+  SAMEORIGIN, Referrer-Policy, Permissions-Policy, HSTS si HTTPS) +
+  test ; documentation `docs/api/reference-api.md`,
+  `docs/architecture/architecture-technique.md`,
+  `docs/securite.md` (mesures + limites assumées + recommandations
+  production).
+
+- Problème : CSP stricte non posée côté frontend.
+- Solution retenue : documentée comme limite — Livewire/Vite
+  nécessitent une politique ajustée, à définir avant exposition.
+  Les autres en-têtes sont déjà en place.
+
+- Problème : la doc technique était éclatée entre README et journal.
+- Solution retenue : 3 documents dédiés (API, architecture, sécurité)
+  pour l'oral — chaque décision renvoie au journal de bord.

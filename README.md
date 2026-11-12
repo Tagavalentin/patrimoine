@@ -138,4 +138,7 @@ mission et le suivi est tenu dans `docs/`.
 - `docs/competences/suivi-competences.md` — suivi des compétences mobilisées
 - `docs/journal/journal-de-bord.md` — journal des problèmes et décisions
 - `docs/guide/` — guide d'utilisation
+- `docs/api/reference-api.md` — référence complète des endpoints REST
+- `docs/architecture/architecture-technique.md` — architecture, flux, décisions
+- `docs/securite.md` — mesures de sécurité et limites connues
 - `docs/fiche-technique.md` — documentation technique (étape 18)
