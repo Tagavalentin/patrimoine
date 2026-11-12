@@ -297,3 +297,28 @@ Format d'une entrée :
 - Problème : les hooks `updated*` Livewire ne rechargeaient pas les
   données après changement de filtre.
 - Solution retenue : `reload()` mutualisé (reset page + appel gateway).
+
+## 2026-11-11 — Étape 15 : frontend — écrans maintenance
+
+- Réalisé : liste des demandes (`/maintenance`, filtres statut/priorité,
+  pagination), création (`/maintenance/nouvelle`, sélecteur de bien via
+  l'asset-service), fiche (`/maintenance/{id}`) avec workflow complet :
+  planifier → démarrer → interventions → terminer.
+
+- Problème : Laravel `ControllerDispatcher` voit `method_exists($c,
+  'callAction')` et dispatche vers `callAction` au lieu de `__invoke` —
+  une méthode privée nommée `callAction` cassait le rendu des pages
+  Livewire (`BadMethodCallException`).
+- Solution retenue : renommée en `performAction` — tout nom de méthode
+  sur un composant page doit éviter les noms réservés du dispatcheur.
+
+- Problème : les actions Livewire (`schedule`, `start`, `complete`,
+  `addIntervention`) doivent être réservées aux gestionnaires.
+- Solution retenue : `canManage()` lit `session('jwt_user.role')`
+  (admin/asset_manager) — boutons masqués pour les autres rôles et
+  garde-fou dans `performAction` ; l'API reste l'autorité finale.
+
+- Problème : les payloads de test `Http::fake` incomplets provoquaient
+  `Undefined array key` dans Blade.
+- Solution retenue : `?? null` sur les clés optionnelles des vues
+  (dates, noms) — les resources API omettent les champs null.

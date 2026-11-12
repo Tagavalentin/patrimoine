@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Livewire\Assets;
 use App\Livewire\Dashboard;
+use App\Livewire\Maintenance;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -18,4 +19,8 @@ Route::middleware('frontend.auth')->group(function (): void {
 
     Route::get('/biens', Assets\Index::class)->name('assets.index');
     Route::get('/biens/{asset}', Assets\Show::class)->name('assets.show');
+
+    Route::get('/maintenance', Maintenance\Index::class)->name('maintenance.index');
+    Route::get('/maintenance/nouvelle', Maintenance\Create::class)->name('maintenance.create');
+    Route::get('/maintenance/{id}', Maintenance\Show::class)->name('maintenance.show');
 });
