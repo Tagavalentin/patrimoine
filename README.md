@@ -141,4 +141,8 @@ mission et le suivi est tenu dans `docs/`.
 - `docs/api/reference-api.md` — référence complète des endpoints REST
 - `docs/architecture/architecture-technique.md` — architecture, flux, décisions
 - `docs/securite.md` — mesures de sécurité et limites connues
+- `docs/uml/` — diagrammes PlantUML (cas d'utilisation, classes, séquences, déploiement)
+- `docs/finance/proposition-financiere.md` — estimation budgétaire
+- `docs/guide/guide-utilisateur.md` — guide d'utilisation
+- `docs/demo/script-demo.md` — script de démonstration 5 min + comptes de démo
 - `docs/fiche-technique.md` — documentation technique (étape 18)

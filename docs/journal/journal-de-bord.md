@@ -382,3 +382,17 @@ Format d'une entrée :
 - Problème : la doc technique était éclatée entre README et journal.
 - Solution retenue : 3 documents dédiés (API, architecture, sécurité)
   pour l'oral — chaque décision renvoie au journal de bord.
+
+## 2026-11-11 — Étape 19 : UML, finance, guide & script de démo
+
+- Réalisé : 4 diagrammes PlantUML (`cas-utilisation`, `classes`
+  par domaine, `sequence-maintenance`, `deploiement`),
+  `proposition-financiere.md` (≈6,8 M FCFA dev + ≈0,5–0,9 M/an
+  exploitation), `guide-utilisateur.md`, `script-demo.md` 5 min
+  avec comptes de démo.
+
+- Problème : l'écran cession n'existe pas côté frontend (workflow
+  API complet mais pas d'UI).
+- Solution retenue : assumé dans le guide (« prévu version
+  ultérieure ») — la démo couvre affectation → maintenance →
+  inventaire → rapport, sans cession UI.

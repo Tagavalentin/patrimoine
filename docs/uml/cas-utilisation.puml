@@ -1,0 +1,67 @@
+@startuml cas-utilisation
+left to right direction
+
+actor Admin as "Administrateur"
+actor AM as "Gestionnaire patrimoine"
+actor SH as "Responsable service"
+actor AC as "Agent comptable"
+actor AU as "Auditeur"
+
+rectangle "Gestion du Patrimoine" {
+  usecase UC1 as "Consulter le tableau de bord"
+  usecase UC2 as "Gérer les biens (CRUD)"
+  usecase UC3 as "Gérer les référentiels"
+  usecase UC4 as "Affecter / transférer / restituer un bien"
+  usecase UC5 as "Demander une maintenance"
+  usecase UC6 as "Gérer le workflow maintenance"
+  usecase UC7 as "Mener une campagne d'inventaire"
+  usecase UC8 as "Contrôler les lignes d'inventaire"
+  usecase UC9 as "Demander / valider une cession"
+  usecase UC10 as "Consulter la valorisation (amortissement)"
+  usecase UC11 as "Exporter des rapports CSV"
+  usecase UC12 as "Consulter le journal d'audit"
+  usecase UC13 as "Gérer les utilisateurs"
+}
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC9
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+
+AM --> UC1
+AM --> UC2
+AM --> UC4
+AM --> UC5
+AM --> UC6
+AM --> UC7
+AM --> UC9
+AM --> UC10
+AM --> UC11
+
+SH --> UC1
+SH --> UC2
+SH --> UC4
+SH --> UC5
+SH --> UC10
+
+AC --> UC1
+AC --> UC10
+AC --> UC9
+AC --> UC11
+
+AU --> UC1
+AU --> UC2
+AU --> UC4
+AU --> UC7
+AU --> UC8
+AU --> UC10
+AU --> UC12
+
+@enduml

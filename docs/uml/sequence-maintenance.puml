@@ -1,0 +1,45 @@
+@startuml sequence-maintenance
+actor U as "Utilisateur"
+participant FE as "Frontend"
+participant GW as "API Gateway"
+participant MS as "maintenance-service"
+participant AS as "asset-service"
+
+== Création de la demande ==
+U->>FE: POST /maintenance/nouvelle
+FE->>FE: POST /api/auth/login (session JWT)
+FE->>GW: POST /api/maintenance/requests {asset_id, description, priority}
+GW->>MS: /api/requests (Bearer JWT)
+MS->>AS: GET /api/assets/{id} (token propagé)
+AS-->>MS: bien {code, designation, status}
+MS->>MS: INSERT maintenance_request (snapshot bien)
+MS-->>FE: 201 {reference MNT-AAAA-NNNN}
+
+== Démarrage des travaux ==
+U->>FE: « Démarrer »
+FE->>GW: POST /api/maintenance/requests/{id}/start
+GW->>MS: /api/requests/{id}/start
+MS->>MS: statut → in_progress, memorise statut precedent du bien
+MS->>AS: POST /api/assets/{id}/status {in_maintenance}
+AS->>AS: transition + asset_status_histories
+AS-->>MS: 200
+MS-->>FE: 200
+Note over MS,AS: Si asset-service indisponible → 503 + rollback local
+
+== Intervention ==
+U->>FE: « Ajouter une intervention »
+FE->>GW: POST /api/maintenance/requests/{id}/interventions
+GW->>MS: /api/requests/{id}/interventions
+MS->>MS: INSERT intervention (technicien, cout, date)
+MS-->>FE: 201
+
+== Clôture ==
+U->>FE: « Terminer »
+FE->>GW: POST /api/maintenance/requests/{id}/complete
+GW->>MS: /api/requests/{id}/complete
+MS->>AS: POST /api/assets/{id}/status {statut precedent}
+AS-->>MS: 200
+MS->>MS: statut → completed
+MS-->>FE: 200
+
+@enduml

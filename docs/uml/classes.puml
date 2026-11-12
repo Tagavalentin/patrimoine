@@ -1,0 +1,150 @@
+@startuml classes-domaine
+skinparam classAttributeIconSize 0
+
+package "auth-service" {
+  class User {
+    +id
+    +name
+    +email
+    +password
+    +role_id
+    +hasRole(slug)
+    +hasPermission(slug)
+  }
+  class Role {
+    +id
+    +name
+    +slug
+  }
+  class Permission {
+    +id
+    +slug
+  }
+  Role "1" -- "*" Permission : permission_role
+  User "*" -- "1" Role
+}
+
+package "asset-service" {
+  class Asset {
+    +code
+    +designation
+    +acquisition_value
+    +useful_life_years
+    +status : AssetStatus
+  }
+  enum AssetStatus {
+    acquired
+    assigned
+    in_maintenance
+    decommissioned
+    disposed
+  }
+  class Category
+  class Location
+  class Department {
+    +parent_id
+  }
+  class Assignment {
+    +asset_id
+    +department_id
+    +responsible_name
+    +start_date
+    +end_date
+    +isActive()
+  }
+  class Disposal {
+    +disposal_type : DisposalType
+    +status : DisposalStatus
+  }
+  enum DisposalStatus {
+    requested
+    approved
+    completed
+    rejected
+  }
+  class AssetStatusHistory {
+    +from_status
+    +to_status
+    +reason
+    +changed_by
+  }
+  class AssetCounter {
+    +year
+    +last_value
+  }
+
+  Asset "*" --> "1" Category
+  Asset "*" --> "1" Location
+  Asset "*" --> "1" Department
+  Asset "1" -- "*" Assignment
+  Asset "1" -- "*" Disposal
+  Asset "1" -- "*" AssetStatusHistory
+  AssetStatus -- Asset
+  DisposalStatus -- Disposal
+}
+
+package "maintenance-service" {
+  class MaintenanceRequest {
+    +reference
+    +asset_id
+    +asset_code
+    +asset_designation
+    +status : MaintenanceStatus
+    +priority
+  }
+  enum MaintenanceStatus {
+    requested
+    scheduled
+    in_progress
+    completed
+  }
+  class Intervention {
+    +technician_name
+    +cost
+    +performed_at
+  }
+  MaintenanceRequest "1" -- "*" Intervention
+  MaintenanceStatus -- MaintenanceRequest
+}
+
+package "inventory-service" {
+  class InventoryCampaign {
+    +reference
+    +name
+    +department_id
+    +location_id
+    +status : InventoryStatus
+  }
+  enum InventoryStatus {
+    draft
+    in_progress
+    completed
+  }
+  class InventoryLine {
+    +asset_id
+    +asset_code
+    +asset_designation
+    +check_status : CheckStatus
+    +notes
+  }
+  enum CheckStatus {
+    pending
+    found
+    missing
+    damaged
+  }
+  InventoryCampaign "1" -- "*" InventoryLine
+}
+
+package "reporting-service" {
+  class ReportAuditLog {
+    +export_type
+    +format
+    +filters : json
+    +rows_count
+    +actor_id
+    +ip_address
+  }
+}
+
+@enduml

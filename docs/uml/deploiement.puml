@@ -1,0 +1,48 @@
+@startuml deploiement
+node "Navigateur" as Browser
+
+node "Hôte Docker" {
+  node "frontend-nginx :8080" as FNGINX
+  node "frontend php-fpm" as FPHP
+  node "gateway nginx :80" as GW
+
+  node "Services (php-fpm + nginx interne)" {
+    node "auth-service" as AUTH
+    node "asset-service" as ASSET
+    node "maintenance-service" as MAINT
+    node "inventory-service" as INV
+    node "reporting-service" as REP
+  }
+
+  database "PostgreSQL 16" as PG {
+    database "auth_db"
+    database "asset_db"
+    database "maintenance_db"
+    database "inventory_db"
+    database "reporting_db"
+  }
+
+  node "Redis 7 (optionnel)" as REDIS
+}
+
+Browser --> FNGINX : HTTP (pages)
+FNGINX --> FPHP : fastcgi
+FPHP --> GW : GATEWAY_URL (API)
+GW --> AUTH : /api/auth/*
+GW --> ASSET : /api/assets/*
+GW --> MAINT : /api/maintenance/*
+GW --> INV : /api/inventory/*
+GW --> REP : /api/reports/*
+
+AUTH --> PG
+ASSET --> PG
+MAINT --> PG
+MAINT ..> ASSET : vérif/statut bien (HTTP interne)
+INV ..> ASSET : chargement des biens (HTTP interne)
+REP ..> ASSET : agrégation (HTTP interne)
+REP ..> MAINT
+REP ..> INV
+MAINT --> REDIS : (réservé)
+REP --> REDIS : (réservé)
+
+@enduml
