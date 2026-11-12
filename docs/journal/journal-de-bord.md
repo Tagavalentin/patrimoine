@@ -349,3 +349,18 @@ Format d'une entrée :
 - Solution retenue : deux gardes distincts `canManage()`
   (admin/asset_manager) et `canCheck()` (+ auditor), reflétant la
   policy `InventoryCampaignPolicy` du service.
+
+## 2026-11-11 — Étape 17 : frontend — écran des affectations
+
+- Réalisé : liste globale des affectations (`/affectations`, filtres
+  actif/service, pagination), création (`/affectations/nouvelle`,
+  sélecteur de biens limités au statut `acquired`), actions en ligne
+  **Transférer** (service destination + responsable + motif) et
+  **Restituer** (motif) sur les affectations actives — réservées
+  admin/asset_manager.
+
+- Problème : l'index des affectations ne propose pas de recherche par
+  bien — le endpoint n'expose que asset_id/department_id/active.
+- Solution retenue : filtres disponibles côté API uniquement ; la
+  recherche fine reste possible depuis la fiche bien
+  (`/biens/{id}` affiche l'historique complet des affectations).

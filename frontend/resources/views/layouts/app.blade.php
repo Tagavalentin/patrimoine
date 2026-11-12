@@ -25,7 +25,10 @@
                 </a>
                 {{-- Entrées futures — branchées aux écrans des étapes suivantes --}}
                 <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Biens</span>
-                <span class="block cursor-not-allowed rounded-lg px-3 py-2 text-slate-500" title="Étape suivante">Affectations</span>
+                <a href="{{ route('assignments.index') }}"
+                   class="block rounded-lg px-3 py-2 {{ request()->routeIs('assignments.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
+                    Affectations
+                </a>
                 <a href="{{ route('maintenance.index') }}"
                    class="block rounded-lg px-3 py-2 {{ request()->routeIs('maintenance.*') ? 'bg-slate-700 font-medium text-white' : 'hover:bg-slate-800' }}">
                     Maintenance

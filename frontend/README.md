@@ -86,6 +86,8 @@ app/
 | `/inventaires/nouvelle` | Création : nom + périmètre département/localisation |
 | `/inventaires/{id}` | Fiche : synthèse des écarts, contrôle des lignes (trouvé/manquant/endommagé), start/complete — gestionnaires ; contrôle aussi auditeur |
 | `/rapports` | Cartes d'export CSV + journal d'audit des exports (admin/auditor) |
+| `/affectations` | Liste des affectations, filtres actif/service, actions transférer/restituer — gestionnaires |
+| `/affectations/nouvelle` | Création : bien acquis + service + responsable |
 | `/rapports/export/{type}` | Relais authentifié des exports CSV (biens, maintenance, inventaire) |
 resources/views/
 ├── layouts/app.blade.php                # layout principal (sidebar + topbar)

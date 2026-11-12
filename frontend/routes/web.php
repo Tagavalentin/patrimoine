@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportController;
 use App\Livewire\Assets;
+use App\Livewire\Assignments;
 use App\Livewire\Dashboard;
 use App\Livewire\Inventory;
 use App\Livewire\Maintenance;
@@ -26,6 +27,9 @@ Route::middleware('frontend.auth')->group(function (): void {
     Route::get('/maintenance', Maintenance\Index::class)->name('maintenance.index');
     Route::get('/maintenance/nouvelle', Maintenance\Create::class)->name('maintenance.create');
     Route::get('/maintenance/{id}', Maintenance\Show::class)->name('maintenance.show');
+
+    Route::get('/affectations', Assignments\Index::class)->name('assignments.index');
+    Route::get('/affectations/nouvelle', Assignments\Create::class)->name('assignments.create');
 
     Route::get('/inventaires', Inventory\Index::class)->name('inventory.index');
     Route::get('/inventaires/nouvelle', Inventory\Create::class)->name('inventory.create');
