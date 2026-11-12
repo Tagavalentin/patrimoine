@@ -45,6 +45,13 @@ Codes d'erreur courants : `401` non authentifié / token invalide ou expiré,
 
 ## asset-service — `/api/assets`
 
+> La gateway accepte **deux formes** pour ce service :
+> `/api/assets/{id}/...` (routes natives `assets/*` du service) et
+> `/api/assets/{ressource}/...` pour les ressources racines
+> (`categories`, `locations`, `departments`, `assignments`,
+> `disposals`, `depreciation`) qui sont réécrites en `/api/{ressource}`.
+> Les chemins ci-dessous sont relatifs au préfixe `/api/assets`.
+
 ### Référentiels (lecture : tout JWT ; écriture : admin)
 
 | Méthode | Route | Description |

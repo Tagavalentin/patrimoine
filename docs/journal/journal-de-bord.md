@@ -396,3 +396,20 @@ Format d'une entrée :
 - Solution retenue : assumé dans le guide (« prévu version
   ultérieure ») — la démo couvre affectation → maintenance →
   inventaire → rapport, sans cession UI.
+
+## 2026-11-11 — Audit pré-release : routage gateway assets
+
+- Problème : la gateway ne gérait que le « double préfixe »
+  (`/api/assets/assets/{id}` → `/api/assets/{id}`) ; les formes
+  `/api/assets` exact et `/api/assets/{id}` retournaient 404,
+  et `/api/assets/` trailing slash aussi.
+- Hypothèses : bug de proxy_pass avec partie URI (`/api/`) qui
+  écrase le préfixe ; les tests feature ne passent pas par nginx.
+- Recherches : mapping frontend (toujours `/api/assets/assets/*`),
+  routes natives asset-service (`assets/*` + ressources racines).
+- Solution retenue : `location /api/assets` + `rewrite` — les
+  ressources racines sont réécrites en `/api/{ressource}` tandis
+  que `/api/assets/{id}/*` est relayé tel quel. Les deux formes
+  fonctionnent désormais. Documenté dans reference-api.md.
+- Correctif annexe : catch redondant `HttpException|\Throwable`
+  simplifié dans AuthController frontend.

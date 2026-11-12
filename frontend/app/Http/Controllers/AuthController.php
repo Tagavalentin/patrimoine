@@ -9,7 +9,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
@@ -72,7 +71,7 @@ class AuthController extends Controller
     {
         try {
             $this->gateway->post('/api/auth/logout');
-        } catch (HttpException|\Throwable) {
+        } catch (\Throwable) {
             // Best effort : le token expirera de toute façon
         }
 
