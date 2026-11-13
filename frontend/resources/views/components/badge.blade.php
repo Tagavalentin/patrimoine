@@ -9,6 +9,7 @@ $classes = [
     'decommissioned' => 'bg-decommissioned-bg text-decommissioned-text',
     'disposed' => 'bg-disposed-bg text-disposed-text',
     'urgent' => 'bg-decommissioned-bg text-decommissioned-text',
+    'high' => 'bg-warn-bg text-warn-text',
     'normal' => 'bg-acquired-bg text-acquired-text',
     'low' => 'bg-disposed-bg text-disposed-text',
     'warn' => 'bg-warn-bg text-warn-text',

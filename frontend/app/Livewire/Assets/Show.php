@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Assets;
 
 use App\Support\GatewayClient;
+use App\Support\PriorityPresenter;
 use App\Support\StatusPresenter;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -26,6 +27,11 @@ class Show extends Component
     public array $assignments = [];
 
     public ?string $error = null;
+
+    public string $tab = 'informations';
+
+    /** @var array<int, array<string, mixed>> */
+    public array $maintenanceRequests = [];
 
     public function mount(string $asset, GatewayClient $gateway): void
     {
@@ -55,10 +61,32 @@ class Show extends Component
         }
     }
 
+    /**
+     * Change d'onglet ; l'onglet Maintenance charge les demandes
+     * du bien à la demande (GET /api/maintenance/requests?asset_id=).
+     */
+    public function selectTab(string $tab): void
+    {
+        $this->tab = $tab;
+
+        if ($tab === 'maintenance' && $this->maintenanceRequests === [] && $this->assetData !== null) {
+            try {
+                $response = app(GatewayClient::class)->get('/api/maintenance/requests', [
+                    'asset_id' => $this->assetId,
+                    'per_page' => 50,
+                ]);
+                $this->maintenanceRequests = $response['data'] ?? [];
+            } catch (\Throwable $e) {
+                Log::warning('Assets\\Show : maintenance indisponible', ['id' => $this->assetId, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
     public function render()
     {
         return view('livewire.assets.show', [
             'presenter' => StatusPresenter::class,
+            'priorityPresenter' => PriorityPresenter::class,
         ])->extends('layouts.app');
     }
 }

@@ -7,6 +7,7 @@ namespace App\Livewire\Assets;
 use App\Support\GatewayClient;
 use App\Support\StatusPresenter;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -16,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Index extends Component
 {
+    #[Url]
     public string $search = '';
 
     public string $status = '';
