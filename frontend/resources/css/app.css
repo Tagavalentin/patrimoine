@@ -6,6 +6,55 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, Arial, sans-serif;
+
+    /* Texte */
+    --color-ink: #0E1B19;
+    --color-muted: #4F615D;
+
+    /* Sidebar */
+    --color-sidebar: #0B2B26;
+    --color-sidebar-active: #14403A;
+    --color-sidebar-text: #BBD3CD;
+    --color-sidebar-sub: #9DBDB5;
+
+    /* Marque */
+    --color-brand: #0F6B57;
+    --color-brand-dark: #0B5A49;
+    --color-brand-ring: #1B8E76;
+    --color-brand-tint: #CDE8E0;
+    --color-brand-soft: #E3F2EE;
+
+    /* Or */
+    --color-gold: #E3A72F;
+    --color-gold-light: #F2C04E;
+
+    /* Avertissement / statuts */
+    --color-warn-bg: #FBEFD0;
+    --color-warn-text: #7A4F00;
+    --color-error: #A63D2F;
+    --color-acquired-bg: #E4EAEE;
+    --color-acquired-text: #2F4858;
+    --color-assigned-bg: #E3F2EE;
+    --color-assigned-text: #0A524C;
+    --color-decommissioned-bg: #F6DDD9;
+    --color-decommissioned-text: #A63D2F;
+    --color-disposed-bg: #E9ECEA;
+    --color-disposed-text: #4F615D;
+    --color-table-head: #EEF2F0;
+
+    /* Surfaces */
+    --color-page: #F4F7F6;
+    --color-line: #E3EAE8;
+    --color-line-strong: #CBD6D3;
+}
+
+@layer base {
+    body {
+        @apply bg-page font-sans text-ink antialiased;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand;
+    }
 }
