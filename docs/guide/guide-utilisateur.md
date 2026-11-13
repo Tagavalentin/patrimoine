@@ -17,21 +17,36 @@
 | `accountant@patrimoine.local` | Comptable | Valorisation, cessions, exports |
 | `auditor@patrimoine.local` | Auditeur | Lecture seule, contrôle des inventaires, journal d'audit |
 
+## Interface
+
+L'application adopte un design sobre vert/or (sidebar profonde,
+cartes arrondies, badges de statut). Sur desktop, la **barre latérale**
+(256 px) regroupe la navigation et le profil en bas ; sur mobile, une
+**barre de navigation inférieure** donne accès aux écrans principaux.
+Les entrées de menu sont **filtrées selon le rôle** de l'utilisateur —
+par exemple un comptable ne voit pas les écrans de maintenance.
+
+> Captures d'écran : à ajouter dans `docs/guide/captures/` (tableau de
+> bord, liste des biens, fiche bien, maintenance, inventaire, connexion).
+
 ## Navigation
 
 La barre latérale donne accès aux écrans : **Tableau de bord**,
 **Biens**, **Affectations**, **Maintenance**, **Inventaires**,
-**Rapports**.
+**Rapports** — selon les droits du rôle.
 
 ## Scénarios courants
 
 ### Consulter le patrimoine
 
-- **Tableau de bord** : indicateurs consolidés (biens par statut,
-  valeur nette comptable, maintenance ouverte, dernier inventaire).
-- **Biens** : recherche par code/désignation, filtres statut et
-  catégorie. Cliquez sur un bien pour sa fiche : informations,
-  valorisation (amortissement), historique des affectations.
+- **Tableau de bord** : carte principale « Valeur nette comptable »,
+  dernière campagne d'inventaire, indicateurs (biens suivis,
+  demandes de maintenance ouvertes) et actions rapides.
+- **Biens** : recherche (aussi disponible dans la barre du haut via
+  `?search=`), filtres statut et catégorie, tableau paginé avec badges
+  de statut. Cliquez sur un bien pour sa fiche, organisée en onglets :
+  **Informations**, **Affectations**, **Maintenance** (demandes du
+  bien) et **Amortissement** (valorisation).
 
 ### Affecter un bien
 
