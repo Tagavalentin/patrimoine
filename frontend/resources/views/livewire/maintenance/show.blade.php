@@ -1,156 +1,154 @@
 <div>
-    <a href="{{ route('maintenance.index') }}" class="text-sm text-indigo-700 hover:underline">← Retour à la liste</a>
+    <a href="{{ route('maintenance.index') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+        <x-icon name="arrow-right" class="h-4 w-4 rotate-180" /> Retour à la liste
+    </a>
 
     @if ($error)
-        <div class="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ $error }}</div>
+        <x-card class="mt-6 border-decommissioned-bg">
+            <p class="text-sm font-semibold text-decommissioned-text">{{ $error }}</p>
+        </x-card>
     @endif
     @if ($notice)
-        <div class="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ $notice }}</div>
+        <x-card class="mt-6 border-brand bg-brand-soft/50">
+            <p class="text-sm font-semibold text-brand-dark">{{ $notice }}</p>
+        </x-card>
     @endif
 
     @if ($request)
         @php
-            $st = $presenter::maintenance($status);
-            $pr = $priorityPresenter::get($request['priority'] ?? null);
+            $stLabel = $presenter::maintenance($status)['label'];
+            $prLabel = $priorityPresenter::get($request['priority'] ?? null)['label'];
         @endphp
 
         {{-- En-tête --}}
-        <div class="mt-4 flex flex-wrap items-start justify-between gap-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <div>
-                <p class="font-mono text-xs text-slate-500">{{ $request['reference'] }}</p>
-                <h1 class="mt-1 text-xl font-semibold text-slate-800">{{ $request['asset']['designation'] ?? 'Bien' }}</h1>
-                <p class="mt-1 text-sm text-slate-600">
-                    {{ $request['asset']['code'] ?? '' }}
-                    — demandé par {{ $request['requested_by']['name'] ?? '—' }}
-                    le {{ ! empty($request['created_at']) ? \Illuminate\Support\Carbon::parse($request['created_at'])->format('d/m/Y') : '—' }}
-                </p>
+        <x-card class="mt-4">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <p class="font-mono text-xs font-semibold text-muted">{{ $request['reference'] }}</p>
+                    <h2 class="mt-1 text-2xl font-extrabold text-ink">{{ $request['asset']['designation'] ?? 'Bien' }}</h2>
+                    <p class="mt-1 text-sm text-muted">
+                        {{ $request['asset']['code'] ?? '' }}
+                        — demandé par {{ $request['requested_by']['name'] ?? '—' }}
+                        le {{ ! empty($request['created_at']) ? \Illuminate\Support\Carbon::parse($request['created_at'])->format('d/m/Y') : '—' }}
+                    </p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <x-badge :variant="$status ?? 'neutral'" class="px-3.5 py-2 text-sm">{{ $stLabel }}</x-badge>
+                    <x-badge :variant="$request['priority'] ?? 'neutral'">Priorité {{ $prLabel }}</x-badge>
+                </div>
             </div>
-            <div class="flex flex-col items-end gap-2">
-                <span class="rounded-full px-3 py-1 text-sm font-medium {{ $st['class'] }}">{{ $st['label'] }}</span>
-                <span class="rounded-full px-3 py-1 text-xs font-medium {{ $pr['class'] }}">Priorité {{ $pr['label'] }}</span>
-            </div>
-        </div>
+        </x-card>
 
         <div class="mt-6 grid gap-6 lg:grid-cols-3">
             {{-- Description + planning --}}
             <div class="space-y-6 lg:col-span-2">
-                <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Problème signalé</h2>
-                    <p class="mt-3 whitespace-pre-line text-sm text-slate-700">{{ $request['description'] }}</p>
-                    <dl class="mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 text-sm sm:grid-cols-3">
-                        <div><dt class="text-slate-500">Planifiée le</dt><dd class="font-medium">{{ ($request['scheduled_date'] ?? null) ? \Illuminate\Support\Carbon::parse($request['scheduled_date'])->format('d/m/Y') : '—' }}</dd></div>
-                        <div><dt class="text-slate-500">Démarrée le</dt><dd class="font-medium">{{ ($request['started_at'] ?? null) ? \Illuminate\Support\Carbon::parse($request['started_at'])->format('d/m/Y H:i') : '—' }}</dd></div>
-                        <div><dt class="text-slate-500">Terminée le</dt><dd class="font-medium">{{ ($request['completed_at'] ?? null) ? \Illuminate\Support\Carbon::parse($request['completed_at'])->format('d/m/Y H:i') : '—' }}</dd></div>
-                        <div><dt class="text-slate-500">Technicien</dt><dd class="font-medium">{{ $request['assigned_to_name'] ?? '—' }}</dd></div>
-                        <div><dt class="text-slate-500">Coût total</dt><dd class="font-medium">{{ number_format((float) ($request['total_cost'] ?? 0), 0, ',', ' ') }} FCFA</dd></div>
+                <x-card>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Problème signalé</h3>
+                    <p class="mt-3 whitespace-pre-line text-sm text-ink">{{ $request['description'] }}</p>
+                    <dl class="mt-4 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm sm:grid-cols-3">
+                        <div><dt class="text-muted">Planifiée le</dt><dd class="mt-0.5 font-semibold text-ink">{{ ($request['scheduled_date'] ?? null) ? \Illuminate\Support\Carbon::parse($request['scheduled_date'])->format('d/m/Y') : '—' }}</dd></div>
+                        <div><dt class="text-muted">Démarrée le</dt><dd class="mt-0.5 font-semibold text-ink">{{ ($request['started_at'] ?? null) ? \Illuminate\Support\Carbon::parse($request['started_at'])->format('d/m/Y H:i') : '—' }}</dd></div>
+                        <div><dt class="text-muted">Terminée le</dt><dd class="mt-0.5 font-semibold text-ink">{{ ($request['completed_at'] ?? null) ? \Illuminate\Support\Carbon::parse($request['completed_at'])->format('d/m/Y H:i') : '—' }}</dd></div>
+                        <div><dt class="text-muted">Technicien</dt><dd class="mt-0.5 font-semibold text-ink">{{ $request['assigned_to_name'] ?? '—' }}</dd></div>
+                        <div><dt class="text-muted">Coût total</dt><dd class="mt-0.5 font-semibold text-ink">{{ number_format((float) ($request['total_cost'] ?? 0), 0, ',', ' ') }} FCFA</dd></div>
                     </dl>
-                </div>
+                </x-card>
 
                 {{-- Interventions --}}
-                <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Interventions</h2>
-                    <div class="mt-4 overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm">
-                            <thead class="text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                                <tr><th class="py-2 pr-4">Date</th><th class="py-2 pr-4">Technicien</th><th class="py-2 pr-4">Description</th><th class="py-2 text-right">Coût</th></tr>
+                <x-card class="overflow-hidden p-0">
+                    <div class="border-b border-line px-7 py-5">
+                        <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Interventions</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-line text-sm">
+                            <thead class="bg-table-head text-left text-[12.5px] font-semibold text-muted">
+                                <tr><th class="px-5 py-3">Date</th><th class="px-5 py-3">Technicien</th><th class="px-5 py-3">Description</th><th class="px-5 py-3 text-right">Coût</th></tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
+                            <tbody class="divide-y divide-line">
                                 @forelse (($request['interventions'] ?? []) as $i)
-                                    <tr>
-                                        <td class="py-2 pr-4">{{ $i['performed_at'] ? \Illuminate\Support\Carbon::parse($i['performed_at'])->format('d/m/Y') : '—' }}</td>
-                                        <td class="py-2 pr-4">{{ $i['technician_name'] ?? '—' }}</td>
-                                        <td class="py-2 pr-4 text-slate-600">{{ $i['description'] }}</td>
-                                        <td class="py-2 text-right">{{ number_format((float) $i['cost'], 0, ',', ' ') }} F</td>
+                                    <tr class="hover:bg-page">
+                                        <td class="px-5 py-3.5 text-muted">{{ $i['performed_at'] ? \Illuminate\Support\Carbon::parse($i['performed_at'])->format('d/m/Y') : '—' }}</td>
+                                        <td class="px-5 py-3.5 text-muted">{{ $i['technician_name'] ?? '—' }}</td>
+                                        <td class="px-5 py-3.5 text-ink">{{ $i['description'] }}</td>
+                                        <td class="px-5 py-3.5 text-right font-semibold text-ink">{{ number_format((float) $i['cost'], 0, ',', ' ') }} F</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="4" class="py-6 text-center text-slate-500">Aucune intervention enregistrée.</td></tr>
+                                    <tr><td colspan="4" class="px-5 py-8 text-center text-muted">Aucune intervention enregistrée.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </x-card>
             </div>
 
             {{-- Actions --}}
             <div class="space-y-6">
                 @if ($canManage)
                     @if ($status === 'requested')
-                        <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                            <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Planifier</h2>
+                        <x-card>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Planifier</h3>
                             <div class="mt-4 space-y-3">
                                 <div>
-                                    <label for="scheduledDate" class="block text-xs font-medium text-slate-500">Date planifiée</label>
+                                    <label for="scheduledDate" class="mb-1.5 block text-[13px] font-semibold text-ink">Date planifiée</label>
                                     <input id="scheduledDate" type="date" wire:model="scheduledDate" min="{{ now()->toDateString() }}"
-                                           class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                                    @error('scheduledDate') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                           class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink focus:border-brand focus:outline-none">
+                                    @error('scheduledDate') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
-                                    <label for="technician" class="block text-xs font-medium text-slate-500">Technicien (optionnel)</label>
+                                    <label for="technician" class="mb-1.5 block text-[13px] font-semibold text-ink">Technicien (optionnel)</label>
                                     <input id="technician" type="text" wire:model="technicianName" placeholder="Nom du technicien"
-                                           class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                           class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink placeholder:text-muted/60 focus:border-brand focus:outline-none">
                                 </div>
-                                <button wire:click="schedule" wire:loading.attr="disabled"
-                                        class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
-                                    Planifier l'intervention
-                                </button>
+                                <x-button variant="primary" wire:click="schedule" wire:loading.attr="disabled" class="w-full">Planifier l'intervention</x-button>
                             </div>
-                        </div>
+                        </x-card>
                     @endif
 
                     @if (in_array($status, ['requested', 'scheduled'], true))
-                        <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                            <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Démarrer</h2>
-                            <p class="mt-2 text-xs text-slate-500">Le bien passera en maintenance.</p>
-                            <button wire:click="start" wire:loading.attr="disabled"
-                                    class="mt-4 w-full rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50">
-                                Démarrer les travaux
-                            </button>
-                        </div>
+                        <x-card>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Démarrer</h3>
+                            <p class="mt-2 text-xs text-muted">Le bien passera en maintenance.</p>
+                            <x-button variant="gold" wire:click="start" wire:loading.attr="disabled" class="mt-4 w-full">Démarrer les travaux</x-button>
+                        </x-card>
                     @endif
 
                     @if ($status === 'in_progress')
-                        <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                            <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Ajouter une intervention</h2>
+                        <x-card>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Ajouter une intervention</h3>
                             <div class="mt-4 space-y-3">
                                 <div>
-                                    <label for="intDesc" class="block text-xs font-medium text-slate-500">Description *</label>
+                                    <label for="intDesc" class="mb-1.5 block text-[13px] font-semibold text-ink">Description *</label>
                                     <textarea id="intDesc" wire:model="interventionDescription" rows="3"
-                                              class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></textarea>
-                                    @error('interventionDescription') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                              class="w-full rounded-xl border border-line-strong bg-white px-3.5 py-3 text-sm font-medium text-ink placeholder:text-muted/60 focus:border-brand focus:outline-none"></textarea>
+                                    @error('interventionDescription') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label for="intCost" class="block text-xs font-medium text-slate-500">Coût (FCFA)</label>
+                                        <label for="intCost" class="mb-1.5 block text-[13px] font-semibold text-ink">Coût (FCFA)</label>
                                         <input id="intCost" type="number" min="0" wire:model="interventionCost"
-                                               class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                               class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink focus:border-brand focus:outline-none">
                                     </div>
                                     <div>
-                                        <label for="performedAt" class="block text-xs font-medium text-slate-500">Date *</label>
+                                        <label for="performedAt" class="mb-1.5 block text-[13px] font-semibold text-ink">Date *</label>
                                         <input id="performedAt" type="date" wire:model="performedAt" max="{{ now()->toDateString() }}"
-                                               class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                                        @error('performedAt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                               class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink focus:border-brand focus:outline-none">
+                                        @error('performedAt') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
                                     </div>
                                 </div>
-                                <button wire:click="addIntervention" wire:loading.attr="disabled"
-                                        class="w-full rounded-lg border border-indigo-600 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
-                                    Enregistrer l'intervention
-                                </button>
+                                <x-button variant="outline" wire:click="addIntervention" wire:loading.attr="disabled" class="w-full">Enregistrer l'intervention</x-button>
                             </div>
-                        </div>
+                        </x-card>
 
-                        <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                            <h2 class="text-sm font-medium uppercase tracking-wide text-slate-500">Terminer</h2>
-                            <p class="mt-2 text-xs text-slate-500">Le statut antérieur du bien sera restauré.</p>
-                            <button wire:click="complete" wire:confirm="Terminer cette demande de maintenance ?" wire:loading.attr="disabled"
-                                    class="mt-4 w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50">
-                                Marquer comme terminée
-                            </button>
-                        </div>
+                        <x-card>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-muted">Terminer</h3>
+                            <p class="mt-2 text-xs text-muted">Le statut antérieur du bien sera restauré.</p>
+                            <x-button variant="primary" wire:click="complete" wire:confirm="Terminer cette demande de maintenance ?" wire:loading.attr="disabled" class="mt-4 w-full">Marquer comme terminée</x-button>
+                        </x-card>
                     @endif
                 @else
-                    <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                        <p class="text-sm text-slate-500">Consultation seule — votre rôle ne permet pas de modifier le workflow.</p>
-                    </div>
+                    <x-card>
+                        <p class="text-sm text-muted">Consultation seule — votre rôle ne permet pas de modifier le workflow.</p>
+                    </x-card>
                 @endif
             </div>
         </div>

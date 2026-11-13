@@ -1,73 +1,64 @@
 <div>
-    <a href="{{ route('assignments.index') }}" class="text-sm text-indigo-700 hover:underline">← Retour à la liste</a>
-    <h1 class="mt-2 text-2xl font-semibold text-slate-800">Nouvelle affectation</h1>
-    <p class="mt-1 text-sm text-slate-500">Seuls les biens au statut « Acquis » peuvent être affectés.</p>
+    <a href="{{ route('assignments.index') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+        <x-icon name="arrow-right" class="h-4 w-4 rotate-180" /> Retour à la liste
+    </a>
+    <h2 class="mt-2 text-2xl font-extrabold text-ink">Nouvelle affectation</h2>
+    <p class="mt-1 text-sm text-muted">Seuls les biens au statut « Acquis » peuvent être affectés.</p>
 
     @if ($error)
-        <div class="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ $error }}</div>
+        <x-card class="mt-6 border-decommissioned-bg">
+            <p class="text-sm font-semibold text-decommissioned-text">{{ $error }}</p>
+        </x-card>
     @endif
 
-    <form wire:submit="save" class="mt-6 max-w-2xl space-y-5 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        <div>
-            <label for="assetId" class="block text-sm font-medium text-slate-700">Bien à affecter *</label>
-            <select id="assetId" wire:model="assetId"
-                    class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                <option value="">— Sélectionner un bien acquis —</option>
-                @foreach ($assets as $asset)
-                    <option value="{{ $asset['id'] }}">{{ $asset['code'] }} — {{ $asset['designation'] }}</option>
-                @endforeach
-            </select>
-            @error('assetId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-            @if (empty($assets))
-                <p class="mt-1 text-xs text-amber-600">Aucun bien disponible à l'affectation.</p>
-            @endif
-        </div>
-
-        <div>
-            <label for="departmentId" class="block text-sm font-medium text-slate-700">Service destinataire *</label>
-            <select id="departmentId" wire:model="departmentId"
-                    class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                <option value="">— Choisir un service —</option>
-                @foreach ($departments as $d)
-                    <option value="{{ $d['id'] }}">{{ $d['name'] }}</option>
-                @endforeach
-            </select>
-            @error('departmentId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-        </div>
-
-        <div class="grid gap-5 sm:grid-cols-2">
+    <x-card class="mt-6 max-w-2xl">
+        <form wire:submit="save" class="space-y-5">
             <div>
-                <label for="responsibleName" class="block text-sm font-medium text-slate-700">Responsable (nom)</label>
-                <input id="responsibleName" type="text" wire:model="responsibleName" placeholder="Nom du responsable"
-                       class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                <label for="assetId" class="mb-1.5 block text-[13px] font-semibold text-ink">Bien à affecter *</label>
+                <select id="assetId" wire:model="assetId"
+                        class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink focus:border-brand focus:outline-none">
+                    <option value="">— Sélectionner un bien acquis —</option>
+                    @foreach ($assets as $asset)
+                        <option value="{{ $asset['id'] }}">{{ $asset['code'] }} — {{ $asset['designation'] }}</option>
+                    @endforeach
+                </select>
+                @error('assetId') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
+                @if (empty($assets))
+                    <p class="mt-1.5 text-xs font-medium text-warn-text">Aucun bien disponible à l'affectation.</p>
+                @endif
             </div>
-            <div>
-                <label for="responsibleEmail" class="block text-sm font-medium text-slate-700">E-mail</label>
-                <input id="responsibleEmail" type="email" wire:model="responsibleEmail"
-                       class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                @error('responsibleEmail') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-            </div>
-        </div>
 
-        <div class="grid gap-5 sm:grid-cols-2">
             <div>
-                <label for="startDate" class="block text-sm font-medium text-slate-700">Date de début</label>
-                <input id="startDate" type="date" wire:model="startDate"
-                       class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                <label for="departmentId" class="mb-1.5 block text-[13px] font-semibold text-ink">Service destinataire *</label>
+                <select id="departmentId" wire:model="departmentId"
+                        class="h-11 w-full rounded-xl border border-line-strong bg-white px-3.5 text-sm font-medium text-ink focus:border-brand focus:outline-none">
+                    <option value="">— Choisir un service —</option>
+                    @foreach ($departments as $d)
+                        <option value="{{ $d['id'] }}">{{ $d['name'] }}</option>
+                    @endforeach
+                </select>
+                @error('departmentId') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
             </div>
-            <div>
-                <label for="reason" class="block text-sm font-medium text-slate-700">Motif</label>
-                <input id="reason" type="text" wire:model="reason" placeholder="Optionnel"
-                       class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-            </div>
-        </div>
 
-        <div class="flex justify-end gap-3">
-            <a href="{{ route('assignments.index') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50">Annuler</a>
-            <button type="submit" wire:loading.attr="disabled"
-                    class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
-                Affecter le bien
-            </button>
-        </div>
-    </form>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                    <x-input wire:model="responsibleName" label="Responsable (nom)" placeholder="Nom du responsable" />
+                </div>
+                <div>
+                    <x-input wire:model="responsibleEmail" label="E-mail" type="email" placeholder="email@exemple.sn" />
+                    @error('responsibleEmail') <p class="mt-1.5 text-xs font-medium text-error">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+                <x-input wire:model="startDate" label="Date de début" type="date" />
+                <x-input wire:model="reason" label="Motif" placeholder="Optionnel" />
+            </div>
+
+            <div class="flex justify-end gap-3 border-t border-line pt-5">
+                <x-button variant="neutral" href="{{ route('assignments.index') }}">Annuler</x-button>
+                <x-button variant="primary" type="submit" wire:loading.attr="disabled">Affecter le bien</x-button>
+            </div>
+        </form>
+    </x-card>
 </div>
